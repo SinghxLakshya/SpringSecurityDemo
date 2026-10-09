@@ -19,6 +19,7 @@ public class User {
     private String username;
     @Column(nullable = false,unique = true)
     private String password;
+    private boolean enabled = true;
 @ManyToMany
 @JoinTable(name = "user_roles",
 joinColumns = @JoinColumn (name = "user_id"),
