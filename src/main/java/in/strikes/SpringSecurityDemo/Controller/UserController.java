@@ -38,8 +38,4 @@ public class UserController {
         return ResponseEntity.ok(loggedIn);
     }
 
-    @GetMapping("/token")
-    public CsrfToken getToken(CsrfToken csrfToken) {
-        return csrfToken;
-    }
 }
