@@ -9,6 +9,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -45,16 +46,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity httpSecurity,
-            DaoAuthenticationProvider provider) {
+            DaoAuthenticationProvider provider,JwtAuthenticationConverter jwtAuthenticationConverter) {
 
         httpSecurity.csrf(csrf -> csrf.disable())
                 .authenticationProvider(provider)
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults())
+
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/user/register").permitAll()
+                        auth.requestMatchers("/api/user/register",
+                                                      "/auth/login").permitAll()
                                 .anyRequest().authenticated()
-                );
+
+                ).sessionManagement(session->session.
+                        sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth2->oauth2.jwt(
+                        jwt->jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
         return httpSecurity.build();
     }
